@@ -23,7 +23,7 @@ class BookModel extends BookEntity {
     this.saleInfo,
     this.accessInfo,
     this.searchInfo,
-  }) : super(
+  }) : super( // >>>>>>>>>>>>>>>>>>>>from book_entity
       bookId: id!,
       image: volumeInfo?.imageLinks?.thumbnail ?? '',
       authorName: volumeInfo?.authors?.first ?? 'No Name',
