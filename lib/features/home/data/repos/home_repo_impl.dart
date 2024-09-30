@@ -12,7 +12,7 @@ class HomeRepoImpl extends HomeRepo {
 
   HomeRepoImpl({required this.homeRemoteDataSource, required this.homeLocalDataSource});
   @override
-  Future<Either<Failure, List<BookEntity>>> fetchFeatureBook() async{
+  Future<Either<Failure, List<BookEntity>>> fetchFeatureBook({int pageNumber = 0}) async{
     try {
       var booksList = homeLocalDataSource.fetchFeatureBook();
       if(booksList.isNotEmpty) {
