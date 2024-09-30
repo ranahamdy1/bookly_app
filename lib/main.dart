@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'constants.dart';
+import 'core/utils/bloc_observer.dart';
 import 'core/utils/functions/setup_service_locator.dart';
 import 'features/home/domain/use_cases/fetch_newest_books_use_case.dart';
 import 'features/home/presentation/manager/newest_books/newest_books_cubit.dart';
@@ -15,12 +16,17 @@ import 'features/home/presentation/manager/newest_books/newest_books_cubit.dart'
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  //hive
   await Hive.initFlutter();
-  Hive.registerAdapter(BookEntityAdapter());
-  setupServiceLocator();
-
   await Hive.openBox<BookEntity>(kFeaturedBox);
   await Hive.openBox<BookEntity>(kNewestBox);
+  Hive.registerAdapter(BookEntityAdapter());
+
+  //get_it
+  setupServiceLocator();
+
+  //bloc observer
+  Bloc.observer = const SimpleBlocObserver();
 
   runApp(const MyApp());
 }
@@ -33,18 +39,10 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) {
-          return FeaturedBooksCubit(
-            FetchFeaturedBooksUseCase(
-              getIt.get<HomeRepoImpl>(),
-            ),
-          );
+          return FeaturedBooksCubit(FetchFeaturedBooksUseCase(getIt.get<HomeRepoImpl>(),),)..fetchFeatureBooks();
         }),
         BlocProvider(create: (context) {
-          return NewestBooksCubit(
-            FetchNewestBooksUseCase(
-              getIt.get<HomeRepoImpl>(),
-            ),
-          );
+          return NewestBooksCubit(FetchNewestBooksUseCase(getIt.get<HomeRepoImpl>(),),)..fetchNewestBooks();
         }),
       ],
       child: MaterialApp.router(
